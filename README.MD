@@ -1,12 +1,11 @@
 ## Project Scope
 
-> TL;DR: To answer the question: 
-"I'm planning to upgrade my PC, it'll be better, obviously. But how much smaller can it be?"
+> TL;DR: To answer one question: "Will all these parts I choose fit nicely into this tiny SFF case?"
+Small Form Factor (SFF) PC community has recently received a few new and economical cases. Unfortunately, the compatibility checker, namely [PCPartPicker.com](https://pcpartpicker.com), is not as accurate when it comes to SFF. It's not the fault of the developers, but rather the nature of SFF cases. The creativity of case designers is limitless, and the compatibility of hardware is not as straightforward as with traditional cases. Therefore, it would be programmatically tedious for a checker to verify compatibility for every published and upcoming SFF case and hardware.
 
-With a few recent new case release, small form factor PC (SFF PC) are more adaptable than usual. However, the compatibility checker (namely [PCPartPicker.com](https://pcpartpicker.com/)) are not as accurate when it comes to SFF. And it would be programmatically
-tedious for checker that check every published and upcoming SFF cases and hardware compatibility. After all, the SFF community is still a niche field.
+Typically, compatibility issues are passed on to the user. Case and CPU cooler manufacturers usually provide detailed manuals to help users determine the amount of clearance they have. It's not uncommon for users to improvise, and in some extreme cases, even modify the case to make the build fit. Some may argue that this is the fun part of building an SFF PC, but it can still be a tedious task.
 
-This project aims to create a compatibility checker that abuse the documentation reading ability of the AI. At this time of writing, AI is still not as good as human in logic and reasoning. But its reading speed and documentation searching ability is far superior. This project will use the AI to read the documentation of the hardware and cases, and then use the information to determine the compatibility.
+This project aims to create a compatibility checker that leverages the AI's ability to read and analyze documentation, overcoming this tediousness. At the time of writing, AI is still not as proficient as humans in logic and reasoning, but its reading speed and documentation searching ability are far superior. This project will utilize AI to read the documentation of hardware and cases, and then use the gathered information to determine compatibility.
 
 ## Example Problem
 
