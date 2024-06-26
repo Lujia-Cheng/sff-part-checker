@@ -1,6 +1,7 @@
 ## Project Scope
 
 > TL;DR: To answer one question: "Will all these parts I choose fit nicely into this tiny SFF case?"
+
 Small Form Factor (SFF) PC community has recently received a few new and economical cases. Unfortunately, the compatibility checker, namely [PCPartPicker.com](https://pcpartpicker.com), is not as accurate when it comes to SFF. It's not the fault of the developers, but rather the nature of SFF cases. The creativity of case designers is limitless, and the compatibility of hardware is not as straightforward as with traditional cases. Therefore, it would be programmatically tedious for a checker to verify compatibility for every published and upcoming SFF case and hardware.
 
 Typically, compatibility issues are passed on to the user. Case and CPU cooler manufacturers usually provide detailed manuals to help users determine the amount of clearance they have. It's not uncommon for users to improvise, and in some extreme cases, even modify the case to make the build fit. Some may argue that this is the fun part of building an SFF PC, but it can still be a tedious task.

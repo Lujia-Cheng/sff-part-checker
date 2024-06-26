@@ -2,13 +2,13 @@
 
 ## Part Selector
 
-build a mockup pcpartpicker.com
+bare minimum for a mockup pcpartpicker.com
 
 - case
-- motherboard
+- motherboard (only ITX)
 - CPU cooler
 - graphics card (optional)
-- power supply
+- power supply (ATX or SFX)
 
 ## AI checker
 
@@ -22,6 +22,16 @@ build a mockup pcpartpicker.com
 2. Identify the manuals' urls
 3. Pass all through the AI checker
 4. Return the compatibility result
+
+# Hardware Compatibility Simplified
+
+| Part          | restrain                         |
+| ------------- | -------------------------------- |
+| Case          | Let Gemini read                  |
+| Motherboard   | ITX only                         |
+| CPU Cooler    | min height if multiple config (e.g. diff fan position in Noctua nh-L12S)   |
+| Graphics Card | length, width, thickness(height) |
+| Power Supply  | ATX or SFX                       |
 
 # Useful Links
 
