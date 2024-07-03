@@ -36,16 +36,16 @@ You are an assistant on PCPartPicker.com. The website is sufficient for checking
 Components list:
 
 - Case: [PDF provided]
-- Motherboard: {JSON file from db}
 - CPU Cooler: {JSON file from db}
 - Graphics Card: {JSON file from db}
+- Motherboard: {JSON file from db}
 - Power Supply: {JSON file from db}
 
 Please be aware of the common pitfall in compatibility:
 
 - For simplicity, only ITX motherboard is considered
-- The GPU length is the most important factor, followed by the width and thickness
 - Use the min height of the CPU cooler if it has multiple configuration
+- The GPU length is the most important factor, followed by the width and thickness
 - If it's a "sandwich" style case, the sum of the GPU thickness and the CPU cooler height shall not exceed the case's clearance
 - If it's a traditional case with power supply moved to the top, the CPU cooler height might be more limited if a ATX power supply is used
 ```

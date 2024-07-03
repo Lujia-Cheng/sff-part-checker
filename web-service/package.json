@@ -6,10 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node ./test/gemini-api.js"
   },
   "dependencies": {
-    "@ai-sdk/google": "^0.0.23",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@google/generative-ai": "^0.14.1",
+    "@mui/icons-material": "latest",
+    "@mui/material": "^5.15.21",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18"
@@ -20,8 +25,6 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
 }

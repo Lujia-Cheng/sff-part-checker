@@ -75,7 +75,10 @@ async function run() {
   // TODO Make these files available on the local file system
   // You may need to update the file paths
   const files = [
-    await uploadToGemini("Terra-manual-V1.2.pdf", "application/pdf"),
+    await uploadToGemini(
+      "../../dev-docs/sample-manual/Terra-manual-V1.2.pdf",
+      "application/pdf"
+    ),
   ];
 
   // Some files have a processing delay. Wait for them to be ready.
@@ -85,33 +88,12 @@ async function run() {
     generationConfig,
     // safetySettings: Adjust safety settings
     // See https://ai.google.dev/gemini-api/docs/safety-settings
-    history: [
-      {
-        role: "user",
-        parts: [
-          {
-            fileData: {
-              mimeType: files[0].mimeType,
-              fileUri: files[0].uri,
-            },
-          },
-          {
-            text: "read the manual and tell me what the maximum gpu thickness can be if its height is 144 with a 77 mm cpu cooler?",
-          },
-        ],
-      },
-      {
-        role: "model",
-        parts: [
-          {
-            text: 'Based on the information provided in the manual, with a 77mm CPU cooler, the maximum thickness of a GPU with a height of 144mm is **62mm**. \n\nThis is because a GPU height of 144mm falls under the "GPU Height <145 mm" category on the Movable Spine Configuration chart (page 18).  Since you\'re using the maximum CPU cooler height, your spine will be in position 1 of 7. In this configuration, the maximum GPU width (or thickness) allowed for a GPU height under 145mm is 33mm. \n',
-          },
-        ],
-      },
-    ],
+    history: [],
   });
 
-  const result = await chatSession.sendMessage("INSERT_INPUT_HERE");
+  const result = await chatSession.sendMessage(
+    "read the manual and tell me what the maximum gpu thickness can be if its height is 144 with a 77 mm cpu cooler?"
+  );
   console.log(result.response.text());
 }
 
