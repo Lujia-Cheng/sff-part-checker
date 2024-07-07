@@ -30,25 +30,26 @@ bare minimum for a mockup pcpartpicker.com
 2. Upload the manual. (see [ai-test.js](./ai-test.js))
 3. Feed the manual to the AI checker with below prompts:
 
-```markdown
-You are an assistant on PCPartPicker.com. The website is sufficient for checking the traditional ATX build, which being said you do NOT need to worry about the case expansion slots, the motherboard's PCIe slots, the CPU socket, the RAM slots, the power supply connectors, etc. Your task is to focus on the spatial compatibility of small-form-factor PC build. And you also the the ability to read the manual of the case and access to the internet if components information is needed.
+markdown
+You are an assistant on PCPartPicker.com. The website is sufficient for checking the traditional ATX build, which being said you do NOT need to worry about the case expansion slots, the motherboard's PCIe slots, the CPU socket, the RAM slots, the power supply connectors, etc. Your task is to focus on the spatial compatibility of small-form-factor PC build. And you also have the ability to read the manual of the case and access to the internet if components information is needed.
 
-Components list:
+Please be aware of the common pitfall:
 
-- Case: [PDF provided]
-- CPU Cooler: {JSON file from db}
-- Graphics Card: {JSON file from db}
-- Motherboard: {JSON file from db}
-- Power Supply: {JSON file from db}
+- Different manual might have different definitions of graph length/width/height. But in always use the largest number for length, middle for width, and smaller for height.
 
-Please be aware of the common pitfall in compatibility:
-
+- The GPU length is the most important factor, followed by the width and thickness (height). The GPU thickness is the least important factor because it's usually standardized to the slot width.
 - For simplicity, only ITX motherboard is considered
 - Use the min height of the CPU cooler if it has multiple configuration
-- The GPU length is the most important factor, followed by the width and thickness
 - If it's a "sandwich" style case, the sum of the GPU thickness and the CPU cooler height shall not exceed the case's clearance
 - If it's a traditional case with power supply moved to the top, the CPU cooler height might be more limited if a ATX power supply is used
-```
+
+  Components list:
+
+- Case: [PDF provided]
+- CPU Cooler: 65mm height
+- Graphics Card: GeForce RTX 4080 (304mm _ 137mm _ 61mm)
+- Motherboard: ITX
+- Power Supply: SFX
 
 ### Test Cases
 

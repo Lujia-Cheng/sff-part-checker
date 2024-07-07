@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node ./test/gemini-api.js"
+    "test": "node ./test/gemini.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
