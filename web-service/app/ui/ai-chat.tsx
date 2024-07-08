@@ -1,7 +1,7 @@
 import { useState } from "react";
 import handler from "../api/ai";
 
-export default function AiChat() {
+export default function AiChat(parts) {
   const [messages, setMessages] = useState([]);
 
   const handleSendMessage = (message) => {};
