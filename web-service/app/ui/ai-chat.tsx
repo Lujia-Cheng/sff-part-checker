@@ -6,7 +6,7 @@ import StopIcon from "@mui/icons-material/Stop";
 
 import { Content } from "@google/generative-ai";
 
-export default function Home() {
+export default function AiChat(parts) {
   const [messageHistory, changeMessageHistory] = useState<Content[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [userText, setUserText] = useState("");
@@ -23,6 +23,7 @@ export default function Home() {
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+  
     // todo - upload file, send text to server, update messageHistory. see google ai studio example in /web-service/app/test/gemini.js 
    
   }
