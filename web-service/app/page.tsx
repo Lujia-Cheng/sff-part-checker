@@ -3,7 +3,7 @@
 import { useState } from "react";
 import AiChat from "./ui/ai-chat";
 import PartPicker from "./ui/part-picker";
-import styles from "./page.module.css";
+// import styles from "./page.module.css";
 
 import { Case, CpuCooler, Motherboard, PowerSupply, VideoCard } from "./type";
 
@@ -28,12 +28,10 @@ export default function Home() {
   };
 
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <PartPicker parts={parts} setParts={setParts} />
+    <>
+      <PartPicker parts={parts} setParts={setParts} />
 
-        <AiChat parts={parts} />
-      </div>
-    </main>
+      <AiChat parts={parts} />
+    </>
   );
 }

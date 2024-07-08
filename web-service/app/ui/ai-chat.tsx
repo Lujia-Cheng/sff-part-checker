@@ -12,8 +12,6 @@ export default function AiChat(parts) {
   const [userText, setUserText] = useState("");
   const [waitingForServer, setWaitingForServer] = useState(false);
 
- 
-
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const newFile = event.target.files?.[0];
     if (newFile) {
@@ -23,9 +21,8 @@ export default function AiChat(parts) {
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-  
-    // todo - upload file, send text to server, update messageHistory. see google ai studio example in /web-service/app/test/gemini.js 
-   
+
+    // todo - upload file, send text to server, update messageHistory. see google ai studio example in /web-service/app/test/gemini.js
   }
 
   function handleCancel() {
