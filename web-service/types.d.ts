@@ -1,4 +1,19 @@
-// Define export interfaces for each component type based on the provided JSON structures
+export interface AiResponseJSON {
+  // see /dev-docs/readme.md
+  compatible: boolean;
+  conflictingParts: string[];
+  reasoning: string;
+  suggestions: string;
+}
+
+export interface PcConfig {
+  case: Case | null;
+  cooler: CpuCooler | null;
+  gpu: VideoCard | null;
+  motherboard: Motherboard | null;
+  psu: PowerSupply | null;
+}
+
 export interface Case {
   name: string;
   price: number | null;

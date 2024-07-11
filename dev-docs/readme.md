@@ -1,8 +1,14 @@
 # TODO
 
-# Figuring out below
+## Workflow
 
-can gemini api read pdf or only vertex ai can? and how can i upload pdf in [gemini api playground](https://aistudio.google.com/app)?
+1. client: User select the components
+2. client: Upload parts information
+3. server: Search the case manual using bing search api
+4. server: download the manual to the server
+5. server: Upload the (manual + system prompt) to Gemini
+6. server: Return the result to the client
+7. client: Display the result
 
 ## Part Selector
 
@@ -30,37 +36,64 @@ bare minimum for a mockup pcpartpicker.com
 2. Upload the manual. (see [ai-test.js](./ai-test.js))
 3. Feed the manual to the AI checker with below prompts:
 
-markdown
-You are an assistant on PCPartPicker.com. The website is sufficient for checking the traditional ATX build, which being said you do NOT need to worry about the case expansion slots, the motherboard's PCIe slots, the CPU socket, the RAM slots, the power supply connectors, etc. Your task is to focus on the spatial compatibility of small-form-factor PC build. And you also have the ability to read the manual of the case and access to the internet if components information is needed.
+### Prompt
 
-Please be aware of the common pitfall:
+#### System
 
-- Different manual might have different definitions of graph length/width/height. But in always use the largest number for length, middle for width, and smaller for height.
+```markdown
+You are an assistant on PCPartPicker.com. The website is sufficient for checking the traditional ATX build. That being said, you do NOT need to worry about the case expansion slots, the motherboard's PCIe slots, the CPU socket, the RAM slots, the power supply connectors, etc. Your task is to focus on the spatial compatibility of small-form-factor PC builds. You also have the ability to read the manual of the case and access the internet if component information is needed.
 
-- The GPU length is the most important factor, followed by the width and thickness (height). The GPU thickness is the least important factor because it's usually standardized to the slot width.
-- For simplicity, only ITX motherboard is considered
-- Use the min height of the CPU cooler if it has multiple configuration
-- If it's a "sandwich" style case, the sum of the GPU thickness and the CPU cooler height shall not exceed the case's clearance
-- If it's a traditional case with power supply moved to the top, the CPU cooler height might be more limited if a ATX power supply is used
+Please be aware of the following common pitfalls:
 
-  Components list:
+- Different manuals might have different definitions of graphics card's length/width/height. But for our case, always use the largest number for length, the middle number for width, and the smallest number for height.
+- For simplicity, only ITX motherboards are considered.
+- Use the minimum height of the CPU cooler if it has multiple configurations.
+- The GPU length is the most important factor, followed by the width and thickness.
+- If it's a "sandwich" style case, the sum of the GPU thickness and the CPU cooler height should not exceed the case's clearance.
+- If it's a traditional case with the power supply moved to the top, the CPU cooler height might be more limited if an ATX power supply is used.
 
-- Case: [PDF provided]
-- CPU Cooler: 65mm height
-- Graphics Card: GeForce RTX 4080 (304mm _ 137mm _ 61mm)
-- Motherboard: ITX
-- Power Supply: SFX
+Component information will be provided in JSON format.
+```
 
-### Test Cases
+#### Components Information
 
-Section [Example Problem](../README.md#example-problem) in README.md
+```json
+{
+  "case": "https://www.fractal-design.com/app/uploads/2023/05/Terra-manual-V1.2.pdf",
+  "cpu_cooler": { "name": "Noctua NH-L9x65 33.84 CFM", "height": 65 },
+  "graphics_card": {
+    "name": "GeForce RTX 4080",
+    "length": 304,
+    "width": 137,
+    "thickness": 61
+  },
+  "motherboard": "ITX",
+  "power_supply": "SFX"
+}
+```
 
-## Workflow
+#### Output JSON schema
 
-1. User select the components
-2. Identify the manuals' urls
-3. Pass all through the AI checker
-4. Return the compatibility result
+```json
+{
+  "type": "object",
+  "properties": {
+    "compatible": { "type": "boolean" },
+    "conflictParts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reasoning": {
+      "type": "string"
+    },
+    "suggestions": {
+      "type": "string"
+    }
+  }
+}
+```
 
 # Useful Links
 

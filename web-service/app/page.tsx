@@ -1,27 +1,24 @@
-"use client";
-
 import { useState } from "react";
-import AiChat from "./ui/ai-chat";
-import PartPicker from "./ui/part-picker";
-// import styles from "./page.module.css";
+import AiChat from "../components/ai-suggestion";
+import PartPicker from "../components/part-picker";
+import type { PcConfig } from "../types";
 
-import { Case, CpuCooler, Motherboard, PowerSupply, VideoCard } from "./type";
+import styles from "./page.module.css";
 
 export default function Home() {
   const [showChat, setShowChat] = useState(false);
-  const [parts, setParts] = useState<{
-    case: Case | null;
-    cooler: CpuCooler | null;
-    gpu: VideoCard | null;
-    motherboard: Motherboard | null;
-    psu: PowerSupply | null;
-  }>({
+  const [parts, setParts] = useState<PcConfig>({
     case: null,
     cooler: null,
     gpu: null,
     motherboard: null,
     psu: null,
   });
+  const [partPickerWidth, setPartPickerWidth] = useState(300); // Initial width
+
+  const handleDrag = (e) => {
+    setPartPickerWidth(e.clientX);
+  };
 
   const handlePartSelection = () => {
     // todo - determine if the user has selected enough parts to enable the chat
@@ -29,9 +26,25 @@ export default function Home() {
 
   return (
     <>
-      <PartPicker parts={parts} setParts={setParts} />
-
-      <AiChat parts={parts} />
+      <div className="flex justify-center items-stretch h-screen">
+        <div
+          style={{ width: `${partPickerWidth}px` }}
+          className="h-full overflow-auto"
+        >
+          <PartPicker parts={parts} setParts={setParts} />
+        </div>
+        <div
+          onMouseDown={(e) => e.preventDefault()} // Prevent text selection while dragging
+          className="cursor-col-resize bg-gray-300 w-2 flex justify-center items-center"
+          draggable="true"
+          onDrag={handleDrag}
+        >
+          {/* You can add a visual indicator for the draggable area if needed */}
+        </div>
+        <div className="flex-grow h-full overflow-auto">
+          <AiChat parts={parts} />
+        </div>
+      </div>
     </>
   );
 }
