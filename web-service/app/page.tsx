@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import AiChat from "../components/ai-suggestion";
 import PartPicker from "../components/part-picker";
@@ -18,10 +20,6 @@ export default function Home() {
 
   const handleDrag = (e) => {
     setPartPickerWidth(e.clientX);
-  };
-
-  const handlePartSelection = () => {
-    // todo - determine if the user has selected enough parts to enable the chat
   };
 
   return (
