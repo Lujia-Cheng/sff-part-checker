@@ -1,9 +1,4 @@
-import { useEffect, useState } from "react";
-import {
-  Autocomplete,
-  AutocompleteItem,
-  AutocompleteSection,
-} from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 
 import caseData from "../app/data/json/case.json";
 import cpuCoolerData from "../app/data/json/cpu-cooler.json";
@@ -30,7 +25,6 @@ export default function PartPicker({
     // todo - not the cleanest way to do this, but it works for now
     <>
       <Autocomplete
-        label="Case"
         placeholder="Select a case"
         onSelectionChange={(item) => updateParts("case", item)}
       >
@@ -41,7 +35,6 @@ export default function PartPicker({
         ))}
       </Autocomplete>
       <Autocomplete
-        label="Cpu Cooler"
         placeholder="Select a cpu cooler"
         onSelectionChange={(item) => updateParts("cooler", item)}
       >
@@ -52,7 +45,6 @@ export default function PartPicker({
         ))}
       </Autocomplete>
       <Autocomplete
-        label="Video Card"
         placeholder="Select a video card"
         onSelectionChange={(item) => updateParts("gpu", item)}
       >
@@ -63,7 +55,6 @@ export default function PartPicker({
         ))}
       </Autocomplete>
       <Autocomplete
-        label="Motherboard"
         placeholder="Select a motherboard"
         onSelectionChange={(item) => updateParts("motherboard", item)}
       >
@@ -75,7 +66,6 @@ export default function PartPicker({
       </Autocomplete>
 
       <Autocomplete
-        label="Power Supply"
         placeholder="Select a power supply"
         onSelectionChange={(item) => updateParts("psu", item)}
       >

@@ -1,28 +1,22 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Spacer } from "@nextui-org/react";
 import { PcConfig, AiResponseJSON } from "@/types";
-import { fetchAiResponse, lookupManualUrl } from "../app/actions";
+import { upload, lookupManualUrl } from "../app/actions";
 import type { GenerateContentResult } from "@google/generative-ai";
 
-export default function AiSuggestion(pcBuilder: PcConfig) {
+export default function AiSuggestion({ parts }: { parts: PcConfig }) {
   const [aiResponse, setAiResponse] = useState<AiResponseJSON>();
   const [manualUrl, setManualUrl] = useState<URL>();
 
   useEffect(() => {
-    if (!pcBuilder.case) {
+    if (!parts.case || !parts.case.name) {
       return;
     }
-    lookupManualUrl(pcBuilder.case.name).then((url) => {
+    lookupManualUrl(parts.case.name).then((url) => {
       setManualUrl(url);
     });
-  }, [pcBuilder.case]);
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
-    const response = await fetchAiResponse(formData, pcBuilder);
-    console.log("handleSubmit:", response);
-    setAiResponse(response);
-  }
+  }, [parts.case]);
+
   return (
     <>
       {manualUrl ? (
@@ -33,15 +27,15 @@ export default function AiSuggestion(pcBuilder: PcConfig) {
         "Case manual not found."
       )}
 
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="file">Upload File:</label>
-        <input type="file" id="file" name="file" />
-        <button type="submit">Generate AI Suggestion</button>
+      <form action={upload}>
+        <input type="file" name="file" />
+        <input type="submit" value="Upload" />
       </form>
 
       {aiResponse ? (
-        <div>
-          <h2>AI Suggestion</h2>
+        <>
+          {JSON.stringify(aiResponse)}
+          {/* <h2>AI Suggestion</h2>
           <p>
             {aiResponse.compatible
               ? "This build is compatible."
@@ -55,8 +49,8 @@ export default function AiSuggestion(pcBuilder: PcConfig) {
               <li key={part}>{part}</li>
             ))}
           </ul>
-          <p>{aiResponse.reasoning}</p>
-        </div>
+          <p>{aiResponse.reasoning}</p> */}
+        </>
       ) : (
         "Awaiting AI Suggestion. "
       )}
