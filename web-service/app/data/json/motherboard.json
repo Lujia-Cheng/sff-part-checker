@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Asus ROG STRIX B650E-I GAMING WIFI",
+    "price": 299.99,
+    "socket": "AM5",
+    "form_factor": "Mini ITX",
+    "max_memory": 96,
+    "memory_slots": 2,
+    "color": "Black"
+  },
+  {
+    "name": "ASRock Z690M-ITX/ax",
+    "price": 134.99,
+    "socket": "LGA1700",
+    "form_factor": "Mini ITX",
+    "max_memory": 64,
+    "memory_slots": 2,
+    "color": "Silver / Black"
+  },
+  {
+    "name": "MSI MPG B650I EDGE WIFI",
+    "price": 261.33,
+    "socket": "AM5",
+    "form_factor": "Mini ITX",
+    "max_memory": 96,
+    "memory_slots": 2,
+    "color": "Black / Silver"
+  }
+]

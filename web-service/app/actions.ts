@@ -36,8 +36,12 @@ export async function fetchAiResponse(
   formData: FormData,
   pcBuilder: PcConfig
 ): Promise<AiResponseJSON> {
-  const manual = formData.get("manual") as string;
+  const manual = formData.get("file")?.toString();
   console.log(`Uploading manual: ${manual}`);
+
+  if (!manual) {
+    throw new Error("No file uploaded.");
+  }
 
   // You may need to update the file paths
   const files = [await uploadToGemini(manual, "application/pdf")];

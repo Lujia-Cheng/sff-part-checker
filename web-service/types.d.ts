@@ -41,6 +41,8 @@ export interface VideoCard {
   boost_clock: number;
   color: string;
   length: number;
+  width: number;
+  height: number;
 }
 export interface Motherboard {
   name: string;

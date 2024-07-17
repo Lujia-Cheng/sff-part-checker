@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Noctua NH-D15",
+    "price": 109.95,
+    "rpm": [300, 1500],
+    "noise_level": [19.2, 24.6],
+    "color": null,
+    "height": 165,
+    "size": null
+  },
+  {
+    "name": "Noctua NH-L9x65 chromax.black",
+    "price": 69.9,
+    "rpm": [600, 2500],
+    "noise_level": [14.8, 23.6],
+    "color": "Black",
+    "height": 65,
+    "size": null
+  },
+  {
+    "name": "Noctua NH-L12Sx77",
+    "price": 74.9,
+    "rpm": [450, 1850],
+    "noise_level": [16.8, 23.9],
+    "color": "Silver / Beige",
+    "height": 77,
+    "size": null
+  },
+  {
+    "name": "Noctua NH-C14S",
+    "price": 79.95,
+    "rpm": [300, 1500],
+    "noise_level": [19.2, 24.6],
+    "color": null,
+    "height": 115,
+    "size": null
+  }
+]

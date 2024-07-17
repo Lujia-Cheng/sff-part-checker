@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import AiChat from "../components/ai-suggestion";
+import AiSuggestion from "../components/ai-suggestion";
 import PartPicker from "../components/part-picker";
 import type { PcConfig } from "../types";
 
@@ -16,7 +16,7 @@ export default function Home() {
     motherboard: null,
     psu: null,
   });
-  const [partPickerWidth, setPartPickerWidth] = useState(300); // Initial width
+  const [partPickerWidth, setPartPickerWidth] = useState(600); // Initial width
 
   const handleDrag = (e) => {
     setPartPickerWidth(e.clientX);
@@ -40,7 +40,7 @@ export default function Home() {
           {/* You can add a visual indicator for the draggable area if needed */}
         </div>
         <div className="flex-grow h-full overflow-auto">
-          <AiChat parts={parts} />
+          <AiSuggestion pcBuilder={parts} />
         </div>
       </div>
     </>

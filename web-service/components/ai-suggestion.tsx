@@ -25,10 +25,12 @@ export default function AiSuggestion(pcBuilder: PcConfig) {
   }
   return (
     <>
-      {manualUrl && (
+      {manualUrl ? (
         <a href={manualUrl.href} target="_blank" rel="noopener noreferrer">
           Case manual found. Click here to download.
         </a>
+      ) : (
+        "Case manual not found."
       )}
 
       <form onSubmit={handleSubmit}>
@@ -56,7 +58,7 @@ export default function AiSuggestion(pcBuilder: PcConfig) {
           <p>{aiResponse.reasoning}</p>
         </div>
       ) : (
-        "insufficient parts to generate AI suggestion. You need to provide at least a case, cooler, gpu, motherboard, and psu."
+        "Awaiting AI Suggestion. "
       )}
     </>
   );

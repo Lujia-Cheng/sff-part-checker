@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Fractal Design Terra",
+    "price": 179.97,
+    "type": "Mini ITX Desktop",
+    "color": "Black / Brown",
+    "psu": null,
+    "side_panel": "Mesh",
+    "external_volume": 11.4,
+    "internal_35_bays": 0
+  },
+  {
+    "name": "Silverstone SG13 V2",
+    "price": 64.98,
+    "type": "Mini ITX Tower",
+    "color": "Black",
+    "psu": null,
+    "side_panel": null,
+    "external_volume": 11.5,
+    "internal_35_bays": 1
+  }
+]

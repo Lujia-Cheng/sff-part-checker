@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Corsair SF750",
+    "price": 184.99,
+    "type": "SFX",
+    "efficiency": "platinum",
+    "wattage": 750,
+    "modular": "Full",
+    "color": null
+  },
+  {
+    "name": "Corsair SF450",
+    "price": null,
+    "type": "SFX",
+    "efficiency": "gold",
+    "wattage": 450,
+    "modular": "Full",
+    "color": null
+  },
+  {
+    "name": "Cooler Master V750 SFX GOLD",
+    "price": 104.99,
+    "type": "SFX",
+    "efficiency": "gold",
+    "wattage": 750,
+    "modular": "Full",
+    "color": "Black"
+  },
+  {
+    "name": "EVGA SuperNOVA 650 GM",
+    "price": 126.66,
+    "type": "SFX",
+    "efficiency": "gold",
+    "wattage": 650,
+    "modular": "Full",
+    "color": "Black"
+  }
+]
