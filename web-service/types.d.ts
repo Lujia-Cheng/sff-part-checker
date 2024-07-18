@@ -7,11 +7,11 @@ export interface AiResponseJSON {
 }
 
 export interface PcConfig {
-  case: Case | null;
-  cooler: CpuCooler | null;
-  gpu: VideoCard | null;
-  motherboard: Motherboard | null;
-  psu: PowerSupply | null;
+  case: Case;
+  cooler: CpuCooler;
+  gpu: VideoCard;
+  motherboard: Motherboard;
+  psu: PowerSupply;
 }
 
 export interface Case {

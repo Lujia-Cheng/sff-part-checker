@@ -1,11 +1,29 @@
 "use server";
 import type { NextApiRequest, NextApiResponse } from "next";
-const {
+import { SFF_SYSTEM_PROMPT } from "@/constants";
+import { PcConfig, AiResponseJSON } from "@/types";
+import {
+  GenerateContentResult,
   GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} = require("@google/generative-ai");
-const { GoogleAIFileManager } = require("@google/generative-ai/files");// fixme
+} from "@google/generative-ai";
+import {
+  FileMetadataResponse,
+  GoogleAIFileManager,
+} from "@google/generative-ai/server";
+import { URL } from "url";
+import { mkdir, writeFile } from "fs/promises";
+import { join } from "path";
+import { createCanvas } from "canvas";
+import pdfjsLib from "pdfjs-dist";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  unlinkSync,
+  write,
+  writeFileSync,
+} from "fs";
+import { RenderParameters } from "pdfjs-dist/types/src/display/api";
 
 type ResData = {
   message: string; // FIXME check gemini doc
@@ -15,7 +33,13 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResData>
 ) {
-  const { prompt, history } = req.body.prompt;
+  const { file, parts }: { file: File; parts: string } = req.body;
+  if (!file || !parts) {
+    res.status(400).json({ message: "file and parts are required" });
+    return;
+  }
+
+
 
   // todo pass to google gemini api? check if vercel makes it easy @link https://sdk.vercel.ai/providers/ai-sdk-providers/google-generative-ai#google-generative-ai-provider
 

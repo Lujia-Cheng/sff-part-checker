@@ -11,9 +11,9 @@ import {
   GoogleAIFileManager,
 } from "@google/generative-ai/server";
 import { URL } from "url";
-import { writeFile } from "fs/promises";
+import { writeFile, rm } from "fs/promises";
 import { join } from "path";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, PathLike } from "fs";
 
 const apiKey = process.env.GOOGLE_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -28,90 +28,51 @@ const generationConfig = {
   responseMimeType: "application/json",
 };
 
-/**
- * Fetches the AI response for the given PC Builder configuration.
- * @param formData
- * @param pcBuilder
- * @returns
- */
-
-// export async function fetchAiResponse(
-//   formData: FormData,
-//   pcBuilder: PcConfig
-// ): Promise<AiResponseJSON> {
-//   const manual = formData.get("file") as File;
-//   console.log("manual received:", manual);
-
-//   if (!manual) {
-//     throw new Error("No file uploaded.");
-//   }
-//   // todo - store file to local then use local path to for AiFileManager
-//   const localPath = await storeFileLocally(manual);
-
-//   // localPath only take string which point to the file on local machine
-//   const files = [await uploadToGemini(localPath, "application/pdf")];
-
-//   // Some files have a processing delay. Wait for them to be ready.
-//   await waitForFilesActive(files);
-
-//   const chatSession = model.startChat({
-//     generationConfig,
-//     history: [
-//       {
-//         role: "user",
-//         parts: [
-//           {
-//             fileData: {
-//               mimeType: files[0].mimeType,
-//               fileUri: files[0].uri,
-//             },
-//           },
-//         ],
-//       },
-//     ],
-//   });
-//   const result = await chatSession.sendMessage(JSON.stringify(pcBuilder));
-
-//   // const result = await model.generateContent([JSON.stringify(pcBuilder), pdf]);
-
-//   return JSON.parse(await result.response.text()) as AiResponseJSON;
-// }
-
 export async function upload(data: FormData) {
   "use server";
   const file = data.get("file") as File;
-  if (!file) {
-    return;
+  const parts = data.get("parts") as string;
+  if (!file || !parts) {
+    throw new Error("file and parts are required");
   }
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const localPath = join(file.name);
-  await writeFile(localPath, buffer);
-  const fileResponse = await uploadToGemini(localPath, file.type);// todo - updated api key's permission, check if it works
-  removeFile(localPath);
+  const tmpDir = "tmp";
+  if (!existsSync(tmpDir)) {
+    mkdirSync(tmpDir, { recursive: true });
+  }
+  const tmpFilePath: PathLike = join("tmp", file.name);
+  await writeFile(tmpFilePath, buffer);// todo - this will work for now, temporary solution to write file to disk
+
+  const geminiUploadResponses = [await uploadToGemini(tmpFilePath, file.type)];
+  // delete the file after uploading
+  await rm(tmpFilePath);
+
+  // Some files have a processing delay. Wait for them to be ready.
+  await waitForFilesActive(geminiUploadResponses);
+
+  const chatSession = model.startChat({
+    generationConfig,
+    // safetySettings: Adjust safety settings
+    // See https://ai.google.dev/gemini-api/docs/safety-settings
+    history: [
+      {
+        role: "user",
+        parts: geminiUploadResponses.map((fileRes) => ({
+          fileData: {
+            mimeType: fileRes.mimeType,
+            fileUri: fileRes.uri,
+          },
+        })), // populate the history with the uploaded files
+      },
+    ],
+  });
+
+  const result = await chatSession.sendMessage(parts);
+  return result.response.text();
 }
 
-/**
- * Stores the given file locally.
- * @param file
- * @returns
- */
-
-/**
- * Converts a File object to a GoogleGenerativeAI.Part object.
- * @link https://ai.google.dev/gemini-api/docs/get-started/tutorial?lang=web#generate-text-from-text-and-image-input
- */
-// async function fileToGenerativePart(file) {
-//   const base64EncodedDataPromise = new Promise((resolve) => {
-//     const reader = new FileReader();
-//     reader.onloadend = () => resolve(reader.result.split(",")[1]);
-//     reader.readAsDataURL(file);
-//   });
-//   return {
-//     inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-//   };
-// }
 /**
  * Uploads the given file to Gemini.
  *
@@ -178,7 +139,4 @@ export async function lookupManualUrl(caseName: string): Promise<URL> {
     throw new Error("No search results found.");
   }
   return new URL(data.items[0].link);
-}
-function removeFile(localPath: string) {
-  throw new Error("Function not implemented.");
 }

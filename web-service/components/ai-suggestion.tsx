@@ -1,37 +1,59 @@
+"use client";
 import { FormEvent, useEffect, useState } from "react";
-import { Spacer } from "@nextui-org/react";
-import { PcConfig, AiResponseJSON } from "@/types";
-import { upload, lookupManualUrl } from "../app/actions";
-import type { GenerateContentResult } from "@google/generative-ai";
+import { Spacer, Button } from "@nextui-org/react";
+import { PcConfig } from "@/types";
+import { upload } from "../app/actions";
 
-export default function AiSuggestion({ parts }: { parts: PcConfig }) {
-  const [aiResponse, setAiResponse] = useState<AiResponseJSON>();
-  const [manualUrl, setManualUrl] = useState<URL>();
+export default function AiSuggestion({
+  parts,
+}: {
+  parts: PcConfig | undefined;
+}) {
+  const [aiResponse, setAiResponse] = useState<any>();
+  const [loading, setLoading] = useState(false);
+  const [readyToSubmit, setReadyToSubmit] = useState(false);
 
   useEffect(() => {
-    if (!parts.case || !parts.case.name) {
+    setReadyToSubmit(Boolean(parts && parts.case && parts.cooler));
+  }, [parts]);
+
+  // const [manualUrl, setManualUrl] = useState<URL>();
+  const [file, changeFile] = useState<File>();
+
+  async function onChange(e: FormEvent<HTMLInputElement>) {
+    const files = e.currentTarget.files;
+    if (files) {
+      changeFile(files[0]);
+    }
+  }
+  async function submit() {
+    if (!file) {
+      console.error("No file selected");
       return;
     }
-    lookupManualUrl(parts.case.name).then((url) => {
-      setManualUrl(url);
-    });
-  }, [parts.case]);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("parts", JSON.stringify(parts));
+    const response = upload(formData);
+  }
 
   return (
     <>
-      {manualUrl ? (
+      {/* {manualUrl ? (
         <a href={manualUrl.href} target="_blank" rel="noopener noreferrer">
           Case manual found. Click here to download.
         </a>
       ) : (
         "Case manual not found."
-      )}
-
-      <form action={upload}>
-        <input type="file" name="file" />
-        <input type="submit" value="Upload" />
-      </form>
-
+      )} */}
+      {/* upload file ui */}
+      <label htmlFor="fileInput">Upload File:</label>
+      <input id="fileInput" type="file" onChange={onChange} />
+      
+      <Button onClick={submit} aria-label="Upload" isDisabled={!readyToSubmit}>
+        Upload
+      </Button>
+      <Spacer y={1} />
       {aiResponse ? (
         <>
           {JSON.stringify(aiResponse)}
@@ -52,7 +74,7 @@ export default function AiSuggestion({ parts }: { parts: PcConfig }) {
           <p>{aiResponse.reasoning}</p> */}
         </>
       ) : (
-        "Awaiting AI Suggestion. "
+        "Awaiting AI Suggestion..."
       )}
     </>
   );

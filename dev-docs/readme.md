@@ -59,16 +59,55 @@ PC components list is provided in the JSON format. Please check the compatibilit
 
 ```json
 {
-  "case": "https://www.fractal-design.com/app/uploads/2023/05/Terra-manual-V1.2.pdf",
-  "cpu_cooler": { "name": "Noctua NH-L9x65 33.84 CFM", "height": 65 },
-  "graphics_card": {
-    "name": "GeForce RTX 4080",
+  "case": {
+    "name": "Fractal Design Terra",
+    "price": 179.97,
+    "type": "Mini ITX Desktop",
+    "color": "Black / Brown",
+    "psu": null,
+    "side_panel": "Mesh",
+    "external_volume": 11.4,
+    "internal_35_bays": 0
+  },
+  "cooler": {
+    "name": "Noctua NH-L9x65 chromax.black",
+    "price": 69.9,
+    "rpm": [600, 2500],
+    "noise_level": [14.8, 23.6],
+    "color": "Black",
+    "height": 65,
+    "size": null
+  },
+  "gpu": {
+    "name": "NVIDIA Founders Edition",
+    "price": 1389.99,
+    "chipset": "GeForce RTX 4080",
+    "memory": 16,
+    "core_clock": 2210,
+    "boost_clock": 2510,
+    "color": "Black / Silver",
     "length": 304,
     "width": 137,
-    "thickness": 61
+    "height": 61
   },
-  "motherboard": "ITX",
-  "power_supply": "SFX"
+  "motherboard": {
+    "name": "ASRock Z690M-ITX/ax",
+    "price": 134.99,
+    "socket": "LGA1700",
+    "form_factor": "Mini ITX",
+    "max_memory": 64,
+    "memory_slots": 2,
+    "color": "Silver / Black"
+  },
+  "psu": {
+    "name": "Corsair SF750",
+    "price": 184.99,
+    "type": "SFX",
+    "efficiency": "platinum",
+    "wattage": 750,
+    "modular": "Full",
+    "color": null
+  }
 }
 ```
 

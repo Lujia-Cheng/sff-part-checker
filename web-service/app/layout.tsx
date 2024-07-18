@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "SFF Part Checker",
-  description: "Your smart assistant for building a small form factor PC",
+  description: "AI assistant for checking SFF PC part compatibility.",
 };
 
 export default function RootLayout({

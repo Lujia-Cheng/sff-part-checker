@@ -12,9 +12,11 @@
   "dependencies": {
     "@google/generative-ai": "^0.14.1",
     "@mui/icons-material": "latest",
-    "@nextui-org/react": "^2.4.2",
+    "@nextui-org/react": "^2.4.3",
     "framer-motion": "^11.2.13",
+    "ghostscript-node": "^1.5.0",
     "next": "14.2.4",
+    "pdfjs-dist": "^4.4.168",
     "react": "^18",
     "react-dom": "^18"
   },

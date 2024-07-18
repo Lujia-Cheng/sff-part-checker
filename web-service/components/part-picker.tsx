@@ -12,7 +12,7 @@ export default function PartPicker({
   parts,
   setParts,
 }: {
-  parts: PcConfig;
+  parts: PcConfig | undefined;
   setParts: any;
 }) {
   // update the parts state with the selected part
@@ -25,6 +25,9 @@ export default function PartPicker({
     // todo - not the cleanest way to do this, but it works for now
     <>
       <Autocomplete
+        aria-label="Case"
+        isRequired
+        label="Case"
         placeholder="Select a case"
         onSelectionChange={(item) => updateParts("case", item)}
       >
@@ -35,6 +38,9 @@ export default function PartPicker({
         ))}
       </Autocomplete>
       <Autocomplete
+        aria-label="CPU Cooler"
+        isRequired
+        label="CPU Cooler"
         placeholder="Select a cpu cooler"
         onSelectionChange={(item) => updateParts("cooler", item)}
       >
@@ -45,6 +51,8 @@ export default function PartPicker({
         ))}
       </Autocomplete>
       <Autocomplete
+        aria-label="Graphic Card"
+        label="Graphic Card"
         placeholder="Select a video card"
         onSelectionChange={(item) => updateParts("gpu", item)}
       >
@@ -55,6 +63,8 @@ export default function PartPicker({
         ))}
       </Autocomplete>
       <Autocomplete
+        aria-label="Motherboard"
+        label="Motherboard"
         placeholder="Select a motherboard"
         onSelectionChange={(item) => updateParts("motherboard", item)}
       >
@@ -66,7 +76,9 @@ export default function PartPicker({
       </Autocomplete>
 
       <Autocomplete
-        placeholder="Select a power supply"
+        aria-label="Power Supply Unit"
+        label="Power Supply Unit"
+        placeholder="Select a power supply unit"
         onSelectionChange={(item) => updateParts("psu", item)}
       >
         {powerSupplyData.map((item) => (
