@@ -13,7 +13,7 @@ import {
 import { URL } from "url";
 import { writeFile, rm } from "fs/promises";
 import { join } from "path";
-import { existsSync, mkdirSync, PathLike } from "fs";
+import { existsSync, mkdirSync, PathLike, writeFileSync } from "fs";
 
 const apiKey = process.env.GOOGLE_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -30,47 +30,53 @@ const generationConfig = {
 
 export async function upload(data: FormData) {
   "use server";
-  const file = data.get("file") as File;
+  const files = data.getAll("files") as File[];
   const parts = data.get("parts") as string;
-  if (!file || !parts) {
-    throw new Error("file and parts are required");
+  if (!files.length || !parts) {
+    throw new Error("files and part list are required");
   }
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
 
   const tmpDir = "tmp";
   if (!existsSync(tmpDir)) {
     mkdirSync(tmpDir, { recursive: true });
   }
-  const tmpFilePath: PathLike = join("tmp", file.name);
-  await writeFile(tmpFilePath, buffer);// todo - this will work for now, temporary solution to write file to disk
 
-  const geminiUploadResponses = [await uploadToGemini(tmpFilePath, file.type)];
+  let geminiUploadResponses: FileMetadataResponse[] = [];
+  // Process each file
+  for (const file of files) {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes); // todo - this will work for now, temporary solution to write file to disk
+    const filePath = join(tmpDir, file.name);
+    writeFileSync(filePath, buffer);
+    const fileRes = await uploadToGemini(filePath, file.type);
+    geminiUploadResponses.push(fileRes);
+  }
+
   // delete the file after uploading
-  await rm(tmpFilePath);
+  // await rm(tmpDir, { recursive: true });
 
   // Some files have a processing delay. Wait for them to be ready.
   await waitForFilesActive(geminiUploadResponses);
 
-  const chatSession = model.startChat({
-    generationConfig,
-    // safetySettings: Adjust safety settings
-    // See https://ai.google.dev/gemini-api/docs/safety-settings
-    history: [
-      {
-        role: "user",
-        parts: geminiUploadResponses.map((fileRes) => ({
-          fileData: {
-            mimeType: fileRes.mimeType,
-            fileUri: fileRes.uri,
-          },
-        })), // populate the history with the uploaded files
-      },
-    ],
-  });
+  // const chatSession = model.startChat({
+  //   generationConfig,
+  //   // safetySettings: Adjust safety settings
+  //   // See https://ai.google.dev/gemini-api/docs/safety-settings
+  //   history: [
+  //     {
+  //       role: "user",
+  //       parts: geminiUploadResponses.map((fileRes) => ({
+  //         fileData: {
+  //           mimeType: fileRes.mimeType,
+  //           fileUri: fileRes.uri,
+  //         },
+  //       })), // populate the history with the uploaded files
+  //     },
+  //   ],
+  // });
 
-  const result = await chatSession.sendMessage(parts);
-  return result.response.text();
+  // const result = await chatSession.sendMessage(parts);
+  // return result.response.text();
 }
 
 /**

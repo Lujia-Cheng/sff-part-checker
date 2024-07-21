@@ -12,29 +12,55 @@ export default function AiSuggestion({
   const [aiResponse, setAiResponse] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [readyToSubmit, setReadyToSubmit] = useState(false);
+  // const [manualUrl, setManualUrl] = useState<URL>();
+  const [files, changeFiles] = useState<File[]>();
 
   useEffect(() => {
     setReadyToSubmit(Boolean(parts && parts.case && parts.cooler));
   }, [parts]);
 
-  // const [manualUrl, setManualUrl] = useState<URL>();
-  const [file, changeFile] = useState<File>();
-
   async function onChange(e: FormEvent<HTMLInputElement>) {
-    const files = e.currentTarget.files;
-    if (files) {
-      changeFile(files[0]);
+    const uploadedFiles = e.currentTarget.files;
+    if (uploadedFiles) {
+      changeFiles(Array.from(uploadedFiles));
     }
   }
   async function submit() {
-    if (!file) {
+    if (!files) {
       console.error("No file selected");
       return;
     }
+    if (!parts) {
+      console.error("No parts selected");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("parts", JSON.stringify(parts));
+    if (files) {
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
+    }
+    const simplifiedParts = simplifyParts(parts);
+    formData.append("parts", JSON.stringify(simplifiedParts));
     const response = upload(formData);
+    setAiResponse(response);
+  }
+  
+  function simplifyParts({
+    case: { name: caseName, type, external_volume },
+    cooler: { name: coolerName, size, height: coolerHeight },
+    gpu: { name: gpuName, chipset, length, width, height: gpuHeight },
+    motherboard: { name: motherboardName, form_factor },
+    psu: { name: psuName, type: psuType },
+  }: PcConfig) {
+    return {
+      case: { caseName, type, external_volume },
+      cooler: { name: coolerName, size, coolerHeight },
+      gpu: { name: gpuName, chipset, length, width, gpuHeight },
+      motherboard: { name: motherboardName, form_factor },
+      psu: { name: psuName, type: psuType },
+    };
   }
 
   return (
@@ -47,9 +73,10 @@ export default function AiSuggestion({
         "Case manual not found."
       )} */}
       {/* upload file ui */}
+
       <label htmlFor="fileInput">Upload File:</label>
-      <input id="fileInput" type="file" onChange={onChange} />
-      
+      <input id="fileInput" type="file" multiple onChange={onChange} />
+
       <Button onClick={submit} aria-label="Upload" isDisabled={!readyToSubmit}>
         Upload
       </Button>

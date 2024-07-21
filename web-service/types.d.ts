@@ -31,6 +31,7 @@ export interface CpuCooler {
   noise_level: number;
   color: string;
   size: number;
+  height: number;
 }
 export interface VideoCard {
   name: string;
