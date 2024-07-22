@@ -1,4 +1,10 @@
-import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import {
+  Autocomplete,
+  AutocompleteItem,
+  Card,
+  CardBody,
+  Grid,
+} from "@nextui-org/react";
 
 import caseData from "../app/data/json/case.json";
 import cpuCoolerData from "../app/data/json/cpu-cooler.json";
@@ -20,10 +26,25 @@ export default function PartPicker({
     const parsedItem = JSON.parse(item);
     setParts({ ...parts, [part]: parsedItem });
   };
+  function simplifyParts({
+    case: { name: caseName, type, external_volume },
+    cooler: { name: coolerName, size, height: coolerHeight },
+    gpu: { name: gpuName, chipset, length, width, height: gpuHeight },
+    motherboard: { name: motherboardName, form_factor },
+    psu: { name: psuName, type: psuType },
+  }: PcConfig) {
+    return {
+      case: { caseName, type, external_volume },
+      cooler: { name: coolerName, size, coolerHeight },
+      gpu: { name: gpuName, chipset, length, width, gpuHeight },
+      motherboard: { name: motherboardName, form_factor },
+      psu: { name: psuName, type: psuType },
+    };
+  }
 
   return (
     // todo - not the cleanest way to do this, but it works for now
-    <>
+    <div className="flex flex-col mx-auto gap-4">
       <Autocomplete
         aria-label="Case"
         isRequired
@@ -37,6 +58,7 @@ export default function PartPicker({
           </AutocompleteItem>
         ))}
       </Autocomplete>
+
       <Autocomplete
         aria-label="CPU Cooler"
         isRequired
@@ -62,6 +84,7 @@ export default function PartPicker({
           </AutocompleteItem>
         ))}
       </Autocomplete>
+
       <Autocomplete
         aria-label="Motherboard"
         label="Motherboard"
@@ -87,9 +110,6 @@ export default function PartPicker({
           </AutocompleteItem>
         ))}
       </Autocomplete>
-
-      {/* display select parts */}
-      <pre>{JSON.stringify(parts, null, 2)} </pre>
-    </>
+    </div>
   );
 }

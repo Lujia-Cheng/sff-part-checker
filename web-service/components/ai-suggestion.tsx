@@ -1,6 +1,18 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
-import { Spacer, Button } from "@nextui-org/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Spacer,
+  Button,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+ 
+  Tooltip,
+} from "@nextui-org/react";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { PcConfig } from "@/types";
 import { upload } from "../app/actions";
 
@@ -13,18 +25,33 @@ export default function AiSuggestion({
   const [loading, setLoading] = useState(false);
   const [readyToSubmit, setReadyToSubmit] = useState(false);
   // const [manualUrl, setManualUrl] = useState<URL>();
-  const [files, changeFiles] = useState<File[]>();
+  const [files, setFiles] = useState<File[]>([]);
+
+  function handleAddFiles() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      setFiles((prevFiles) => [...prevFiles, ...files]);
+    };
+    input.click();
+  }
+
+  function handleDeleteFile(index: number) {
+    return () => {
+      setFiles((prevFiles) => {
+        const newFiles = [...prevFiles];
+        newFiles.splice(index, 1);
+        return newFiles;
+      });
+    };
+  }
 
   useEffect(() => {
     setReadyToSubmit(Boolean(parts && parts.case && parts.cooler));
   }, [parts]);
 
-  async function onChange(e: FormEvent<HTMLInputElement>) {
-    const uploadedFiles = e.currentTarget.files;
-    if (uploadedFiles) {
-      changeFiles(Array.from(uploadedFiles));
-    }
-  }
   async function submit() {
     if (!files) {
       console.error("No file selected");
@@ -46,7 +73,7 @@ export default function AiSuggestion({
     const response = upload(formData);
     setAiResponse(response);
   }
-  
+
   function simplifyParts({
     case: { name: caseName, type, external_volume },
     cooler: { name: coolerName, size, height: coolerHeight },
@@ -62,6 +89,16 @@ export default function AiSuggestion({
       psu: { name: psuName, type: psuType },
     };
   }
+  function formatBytes(bytes: number, decimals = 2) {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  }
+
+  console.log(formatBytes(1551859712)); // Output: "1.45 GB"
 
   return (
     <>
@@ -74,12 +111,56 @@ export default function AiSuggestion({
       )} */}
       {/* upload file ui */}
 
-      <label htmlFor="fileInput">Upload File:</label>
-      <input id="fileInput" type="file" multiple onChange={onChange} />
-
-      <Button onClick={submit} aria-label="Upload" isDisabled={!readyToSubmit}>
-        Upload
-      </Button>
+      <Table
+        isStriped
+        aria-label="Uploaded Manual"
+        topContent={
+          <div className="flex w-full space-between
+          justify-between items-center
+          ">
+            <div className="grow">Upload Manual</div>
+            <Button
+              onClick={submit}
+              color="primary"
+              aria-label="Upload"
+              isDisabled={!readyToSubmit}
+            >
+              Submit for AI Suggestion
+            </Button>
+          </div>
+        }
+        bottomContent={
+          <div className="flex           justify-center">
+            <Button onClick={handleAddFiles}>Add Files</Button>
+          </div>
+        }
+      >
+        <TableHeader>
+          <TableColumn>File Name</TableColumn>
+          <TableColumn>Size</TableColumn>
+          <TableColumn>Action</TableColumn>
+        </TableHeader>
+        <TableBody emptyContent={"No manual uploaded"}>
+          {files.map((file, index) => (
+            <TableRow key={file.name}>
+              <TableCell>{file.name}</TableCell>
+              {/* if >1mb use mb if >1gb use gb */}
+              <TableCell>{formatBytes(file.size)}</TableCell>
+              <TableCell>
+                <Tooltip content="Delete">
+                  <Button
+                    color="danger"
+                    startContent={<DeleteIcon />}
+                    onClick={handleDeleteFile(index)}
+                  >
+                    Delete
+                  </Button>
+                </Tooltip>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       <Spacer y={1} />
       {aiResponse ? (
         <>
