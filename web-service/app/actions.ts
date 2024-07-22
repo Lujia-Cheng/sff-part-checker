@@ -2,6 +2,7 @@
 
 import { SFF_SYSTEM_PROMPT } from "@/constants";
 import { PcConfig, AiResponseJSON } from "@/types";
+
 import {
   GenerateContentResult,
   GoogleGenerativeAI,
@@ -10,11 +11,15 @@ import {
   FileMetadataResponse,
   GoogleAIFileManager,
 } from "@google/generative-ai/server";
+
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { join } from "path";
 import { URL } from "url";
 import { writeFile, rm } from "fs/promises";
-import { join } from "path";
-import { existsSync, mkdirSync, PathLike, writeFileSync } from "fs";
-const gs = require("ghostscript-node");
+
+import { createCanvas } from "canvas";
+import { getDocument } from "pdfjs-dist";
+import type { RenderParameters } from "pdfjs-dist/types/src/display/api";
 
 const apiKey = process.env.GOOGLE_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -49,21 +54,21 @@ export async function upload(data: FormData) {
     const buffer = Buffer.from(bytes); // todo - this will work for now, temporary solution to write file to disk
 
     if (file.type === "application/pdf") {
-      // todo break pdf into png
-      const pngs: Buffer[] = await gs.renderPDFPagesToPNG(buffer);
+      // use pdfjs to break pdf pages to multiple pngs
+      const pngs = await convertPdfToPngs(buffer, tmpDir);
       // write each png to disk and upload to gemini
       pngs.forEach(async (png, index) => {
+        // u
         const filePath = join(tmpDir, `${file.name}-${index}.png`);
         writeFileSync(filePath, png);
-        const fileRes = await uploadToGemini(filePath, "image/png");
-        console.log(JSON.stringify(fileRes));
-        geminiUploadResponses.push(fileRes);
+
+        // geminiUploadResponses.push(fileRes);
       });
     } else {
       const filePath = join(tmpDir, file.name);
       writeFileSync(filePath, buffer);
-      const fileRes = await uploadToGemini(filePath, file.type);
-      geminiUploadResponses.push(fileRes);
+      // const fileRes = await uploadToGemini(filePath, file.type);
+      // geminiUploadResponses.push(fileRes);
     }
   }
 
@@ -71,29 +76,59 @@ export async function upload(data: FormData) {
   // await rm(tmpDir, { recursive: true });
 
   // Some files have a processing delay. Wait for them to be ready.
-  await waitForFilesActive(geminiUploadResponses);
+  // await waitForFilesActive(geminiUploadResponses);
 
-  const chatSession = model.startChat({
-    generationConfig,
-    // safetySettings: Adjust safety settings
-    // See https://ai.google.dev/gemini-api/docs/safety-settings
-    history: [
-      {
-        role: "user",
-        parts: geminiUploadResponses.map((fileRes) => ({
-          fileData: {
-            mimeType: fileRes.mimeType,
-            fileUri: fileRes.uri,
-          },
-        })), // populate the history with the uploaded files
-      },
-    ],
-  });
+  // const chatSession = model.startChat({
+  //   generationConfig,
+  //   // safetySettings: Adjust safety settings
+  //   // See https://ai.google.dev/gemini-api/docs/safety-settings
+  //   history: [
+  //     {
+  //       role: "user",
+  //       parts: geminiUploadResponses.map((fileRes) => ({
+  //         fileData: {
+  //           mimeType: fileRes.mimeType,
+  //           fileUri: fileRes.uri,
+  //         },
+  //       })), // populate the history with the uploaded files
+  //     },
+  //   ],
+  // });
 
-  const result = await chatSession.sendMessage(parts);
-  return result.response.text();
+  // const result = await chatSession.sendMessage(parts);
+  // return result.response.text();
 }
+/**
+ * Converts a PDF buffer into PNG images and stores them locally.
+ * @param pdfBuffer - The PDF buffer.
+ * @param tmpDir - The directory to store the PNG images.
+ * @returns A promise that resolves to an array of file paths of the PNG images.
+ */
+async function convertPdfToPngs(
+  pdfBuffer: Buffer,
+  tmpDir: string
+): Promise<string[]> {
+  const pdf = await getDocument(pdfBuffer).promise;
+  const pngs: string[] = [];
 
+  for (let i = 0; i < pdf.numPages; i++) {
+    const page = await pdf.getPage(i + 1);
+    const viewport = page.getViewport({ scale: 1.5 });
+    const canvas = createCanvas(viewport.width, viewport.height);
+    const context = canvas.getContext("2d");
+    const renderContext = {
+      canvasContext: context,
+      viewport,
+    };
+
+    await page.render(renderContext as unknown as RenderParameters).promise;
+    const png = canvas.toBuffer("image/png");
+    const filePath = join(tmpDir, `${i}.png`);
+    writeFileSync(filePath, png);
+    pngs.push(filePath);
+  }
+  return pngs;
+}
 /**
  * Uploads the given file to Gemini.
  *
