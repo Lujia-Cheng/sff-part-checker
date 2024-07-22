@@ -9,7 +9,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
- 
   Tooltip,
 } from "@nextui-org/react";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -98,8 +97,6 @@ export default function AiSuggestion({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   }
 
-  console.log(formatBytes(1551859712)); // Output: "1.45 GB"
-
   return (
     <>
       {/* {manualUrl ? (
@@ -115,9 +112,11 @@ export default function AiSuggestion({
         isStriped
         aria-label="Uploaded Manual"
         topContent={
-          <div className="flex w-full space-between
+          <div
+            className="flex w-full space-between
           justify-between items-center
-          ">
+          "
+          >
             <div className="grow">Upload Manual</div>
             <Button
               onClick={submit}
