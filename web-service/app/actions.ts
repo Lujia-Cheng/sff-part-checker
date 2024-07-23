@@ -12,7 +12,7 @@ import {
   GoogleAIFileManager,
 } from "@google/generative-ai/server";
 
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { createWriteStream, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import { URL } from "url";
 import { writeFile, rm } from "fs/promises";
@@ -55,19 +55,28 @@ export async function upload(data: FormData) {
 
     if (file.type === "application/pdf") {
       // use pdfjs to break pdf pages to multiple pngs
-      const pngs = await convertPdfToPngs(buffer, tmpDir);
-      // write each png to disk and upload to gemini
-      pngs.forEach(async (png, index) => {
-        // u
-        const filePath = join(tmpDir, `${file.name}-${index}.png`);
-        writeFileSync(filePath, png);
-
+      const doc = await getDocument(buffer).promise;
+      for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
+        const page = await doc.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = createCanvas(viewport.width, viewport.height);
+        const context = canvas.getContext("2d");
+        const renderContext: RenderParameters = {
+          canvasContext: context,
+          viewport,
+        };
+        await page.render(renderContext).promise;
+        const filePath = join(tmpDir, `${file.name}-${i}.png`);
+        const out = createWriteStream(filePath);
+        const stream = canvas.createPNGStream();
+        stream.pipe(out);
+        const fileRes = await uploadToGemini(filePath, "image/png");
         // geminiUploadResponses.push(fileRes);
-      });
+      }
     } else {
       const filePath = join(tmpDir, file.name);
       writeFileSync(filePath, buffer);
-      // const fileRes = await uploadToGemini(filePath, file.type);
+      const fileRes = await uploadToGemini(filePath, file.type);
       // geminiUploadResponses.push(fileRes);
     }
   }
@@ -98,37 +107,7 @@ export async function upload(data: FormData) {
   // const result = await chatSession.sendMessage(parts);
   // return result.response.text();
 }
-/**
- * Converts a PDF buffer into PNG images and stores them locally.
- * @param pdfBuffer - The PDF buffer.
- * @param tmpDir - The directory to store the PNG images.
- * @returns A promise that resolves to an array of file paths of the PNG images.
- */
-async function convertPdfToPngs(
-  pdfBuffer: Buffer,
-  tmpDir: string
-): Promise<string[]> {
-  const pdf = await getDocument(pdfBuffer).promise;
-  const pngs: string[] = [];
 
-  for (let i = 0; i < pdf.numPages; i++) {
-    const page = await pdf.getPage(i + 1);
-    const viewport = page.getViewport({ scale: 1.5 });
-    const canvas = createCanvas(viewport.width, viewport.height);
-    const context = canvas.getContext("2d");
-    const renderContext = {
-      canvasContext: context,
-      viewport,
-    };
-
-    await page.render(renderContext as unknown as RenderParameters).promise;
-    const png = canvas.toBuffer("image/png");
-    const filePath = join(tmpDir, `${i}.png`);
-    writeFileSync(filePath, png);
-    pngs.push(filePath);
-  }
-  return pngs;
-}
 /**
  * Uploads the given file to Gemini.
  *
