@@ -1,9 +1,21 @@
+import { Schema } from "@google/generative-ai";
 export interface AiResponseJSON {
   // see /dev-docs/readme.md
-  compatible: boolean;
-  conflictingParts: string[];
-  reasoning: string;
-  suggestions: string;
+  compatibility: FunctionDeclarationSchemaType.BOOLEAN;
+  rationale: FunctionDeclarationSchemaType.STRING;
+}
+export interface AiResponseJsonSchema extends Schema {
+  type: FunctionDeclarationSchemaType.OBJECT;
+  properties: {
+    compatibility: {
+      type: FunctionDeclarationSchemaType.BOOLEAN;
+      properties: {};
+    };
+    rationale: {
+      type: FunctionDeclarationSchemaType.STRING;
+      properties: {};
+    };
+  };
 }
 
 export interface PcConfig {
@@ -43,7 +55,7 @@ export interface VideoCard {
   color: string;
   length: number;
   width: number;
-  height: number;
+  total_slot_width: number;
 }
 export interface Motherboard {
   name: string;

@@ -9,7 +9,7 @@
     "color": "Silver / Black",
     "length": 313,
     "width": 138,
-    "height": 61
+    "total_slot_width": 61
   },
   {
     "name": "NVIDIA Founders Edition",
@@ -21,7 +21,7 @@
     "color": "Black / Silver",
     "length": 244,
     "width": 112,
-    "height": 40
+    "total_slot_width": 40
   },
   {
     "name": "NVIDIA Founders Edition",
@@ -33,7 +33,7 @@
     "color": "Black / Silver",
     "length": 244,
     "width": 98,
-    "height": 40
+    "total_slot_width": 40
   },
   {
     "name": "NVIDIA Founders Edition",
@@ -45,7 +45,7 @@
     "color": "Black / Silver",
     "length": 304,
     "width": 137,
-    "height": 61
+    "total_slot_width": 61
   },
   {
     "name": "NVIDIA Founders Edition",
@@ -57,18 +57,18 @@
     "color": "Black / Silver",
     "length": 304,
     "width": 137,
-    "height": 61
+    "total_slot_width": 61
   },
   {
     "name": "Asus ROG STRIX GAMING OC",
     "price": 1979.99,
-    "chipset": "GeForce RTX 4080 SUPER",
-    "memory": 24,
-    "core_clock": 2235,
-    "boost_clock": 2550,
+    "chipset": "GeForce RTX 4080",
+    "memory": 16,
+    "core_clock": 2205,
+    "boost_clock": 2655,
     "color": "White",
     "length": 358,
     "width": 150,
-    "height": 71
+    "total_slot_width": 70
   }
 ]

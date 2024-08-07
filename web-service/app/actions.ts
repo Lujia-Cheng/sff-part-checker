@@ -1,10 +1,10 @@
 "use server";
 
-import { SFF_SYSTEM_PROMPT } from "@/constants";
-import { PcConfig, AiResponseJSON } from "@/types";
+import { SYSTEM_PROMPT } from "@/constants";
 
 import {
-  GenerateContentResult,
+  FunctionDeclarationSchemaType,
+  GenerationConfig,
   GoogleGenerativeAI,
 } from "@google/generative-ai";
 import {
@@ -12,14 +12,10 @@ import {
   GoogleAIFileManager,
 } from "@google/generative-ai/server";
 
-import { createWriteStream, existsSync, mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import { URL } from "url";
-import { writeFile, rm } from "fs/promises";
-
-import { createCanvas } from "canvas";
-import { getDocument } from "pdfjs-dist";
-import type { RenderParameters } from "pdfjs-dist/types/src/display/api";
+import { rm } from "fs/promises";
 
 const apiKey = process.env.GOOGLE_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -27,11 +23,24 @@ const fileManager = new GoogleAIFileManager(apiKey);
 
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-pro",
-  systemInstruction: SFF_SYSTEM_PROMPT,
+  systemInstruction: SYSTEM_PROMPT,
 });
 
-const generationConfig = {
+const generationConfig: GenerationConfig = {
   responseMimeType: "application/json",
+  responseSchema: {
+    type: FunctionDeclarationSchemaType.OBJECT,
+    properties: {
+      compatibility: {
+        type: FunctionDeclarationSchemaType.BOOLEAN,
+        properties: {},
+      },
+      rationale: {
+        type: FunctionDeclarationSchemaType.STRING,
+        properties: {},
+      },
+    },
+  },
 };
 
 export async function upload(data: FormData) {
@@ -53,59 +62,37 @@ export async function upload(data: FormData) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes); // todo - this will work for now, temporary solution to write file to disk
 
-    if (file.type === "application/pdf") {
-      // use pdfjs to break pdf pages to multiple pngs
-      const doc = await getDocument(buffer).promise;
-      for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
-        const page = await doc.getPage(pageNumber);
-        const viewport = page.getViewport({ scale: 1.5 });
-        const canvas = createCanvas(viewport.width, viewport.height);
-        const context = canvas.getContext("2d");
-        const renderContext: RenderParameters = {
-          canvasContext: context,
-          viewport,
-        };
-        await page.render(renderContext).promise;
-        const filePath = join(tmpDir, `${file.name}-${i}.png`);
-        const out = createWriteStream(filePath);
-        const stream = canvas.createPNGStream();
-        stream.pipe(out);
-        const fileRes = await uploadToGemini(filePath, "image/png");
-        // geminiUploadResponses.push(fileRes);
-      }
-    } else {
-      const filePath = join(tmpDir, file.name);
-      writeFileSync(filePath, buffer);
-      const fileRes = await uploadToGemini(filePath, file.type);
-      // geminiUploadResponses.push(fileRes);
-    }
+    const filePath = join(tmpDir, file.name);
+    writeFileSync(filePath, buffer);
+    const fileRes = await uploadToGemini(filePath, file.type);
+    geminiUploadResponses.push(fileRes);
   }
 
-  // delete the file after uploading
-  // await rm(tmpDir, { recursive: true });
-
   // Some files have a processing delay. Wait for them to be ready.
-  // await waitForFilesActive(geminiUploadResponses);
+  await waitForFilesActive(geminiUploadResponses);
 
-  // const chatSession = model.startChat({
-  //   generationConfig,
-  //   // safetySettings: Adjust safety settings
-  //   // See https://ai.google.dev/gemini-api/docs/safety-settings
-  //   history: [
-  //     {
-  //       role: "user",
-  //       parts: geminiUploadResponses.map((fileRes) => ({
-  //         fileData: {
-  //           mimeType: fileRes.mimeType,
-  //           fileUri: fileRes.uri,
-  //         },
-  //       })), // populate the history with the uploaded files
-  //     },
-  //   ],
-  // });
+  // delete the file after uploading
+  await rm(tmpDir, { recursive: true });
 
-  // const result = await chatSession.sendMessage(parts);
-  // return result.response.text();
+  const chatSession = model.startChat({
+    generationConfig,
+    history: [
+      {
+        role: "user",
+        parts: geminiUploadResponses.map((fileRes) => ({
+          fileData: {
+            mimeType: fileRes.mimeType,
+            fileUri: fileRes.uri,
+          },
+        })), // populate the history with the uploaded files
+      },
+    ],
+  });
+
+  const result = await chatSession.sendMessage(parts);
+
+  console.log("AI response:", result.response.text());
+  return result.response.text();
 }
 
 /**
@@ -159,7 +146,7 @@ async function waitForFilesActive(files: FileMetadataResponse[]) {
  * @param caseName
  * @returns
  */
-export async function lookupManualUrl(caseName: string): Promise<URL> {
+export async function lookupManualUrl(caseName: string): Promise<string> {
   const query = `${caseName} manual filetype:pdf`;
 
   const response = await fetch(
@@ -173,5 +160,5 @@ export async function lookupManualUrl(caseName: string): Promise<URL> {
   if (!data.items || data.items.length === 0) {
     throw new Error("No search results found.");
   }
-  return new URL(data.items[0].link);
+  return data.items[0].link;
 }

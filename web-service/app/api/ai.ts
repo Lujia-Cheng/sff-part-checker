@@ -1,6 +1,6 @@
 "use server";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { SFF_SYSTEM_PROMPT } from "@/constants";
+import { SYSTEM_PROMPT } from "@/constants";
 import { PcConfig, AiResponseJSON } from "@/types";
 import {
   GenerateContentResult,
