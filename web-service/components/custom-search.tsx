@@ -24,19 +24,20 @@ export default function CustomSearch({
       console.log("Manual URL:", url);
     });
   }, [parts]);
-  function uploadManual() {}
+  function uploadManual() {
+    // todo
+  }
 
   return (
     <>
       {manualUrl && (
         <>
-          <span>
-            We found the manual for your case on{" "}
+          <p>
+            We found the manual of your case on{" "}
             <Link href={manualUrl} isExternal showAnchorIcon>
-              {/* show main url only */}
               {new URL(manualUrl).hostname}
             </Link>
-          </span>
+          </p>
           <Button disabled onClick={uploadManual}>
             Review and Upload Manual
           </Button>
