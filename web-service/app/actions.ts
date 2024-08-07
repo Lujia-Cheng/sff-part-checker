@@ -13,9 +13,8 @@ import {
 } from "@google/generative-ai/server";
 
 import { existsSync, mkdirSync, writeFileSync } from "fs";
-import { join } from "path";
-import { URL } from "url";
 import { rm } from "fs/promises";
+import { join } from "path";
 
 const apiKey = process.env.GOOGLE_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -43,24 +42,33 @@ const generationConfig: GenerationConfig = {
   },
 };
 
-export async function upload(data: FormData) {
+/**
+ * Download the manual from the given URL and upload it to Gemini File Manager. Then, send the manual to the AI model as history. Finally, send the parts to the AI model as a message.
+ *
+ * @param data FormData containing the manual file and parts
+ * @returns
+ */
+export async function upload(data: FormData): Promise<string> {
   "use server";
+  // Extract the files and parts from the form data
   const files = data.getAll("files") as File[];
   const parts = data.get("parts") as string;
   if (!files.length || !parts) {
     throw new Error("files and part list are required");
   }
 
+  // Create a temporary directory to store the files
+  // todo - this is a temporary solution to write file to disk
   const tmpDir = "tmp";
   if (!existsSync(tmpDir)) {
     mkdirSync(tmpDir, { recursive: true });
   }
 
   let geminiUploadResponses: FileMetadataResponse[] = [];
-  // Process each file
+
   for (const file of files) {
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes); // todo - this will work for now, temporary solution to write file to disk
+    const buffer = Buffer.from(bytes);
 
     const filePath = join(tmpDir, file.name);
     writeFileSync(filePath, buffer);
@@ -74,6 +82,7 @@ export async function upload(data: FormData) {
   // delete the file after uploading
   await rm(tmpDir, { recursive: true });
 
+  // Send the files to the AI model as history
   const chatSession = model.startChat({
     generationConfig,
     history: [
@@ -84,7 +93,7 @@ export async function upload(data: FormData) {
             mimeType: fileRes.mimeType,
             fileUri: fileRes.uri,
           },
-        })), // populate the history with the uploaded files
+        })),
       },
     ],
   });

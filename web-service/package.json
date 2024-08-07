@@ -18,7 +18,7 @@
     "@nextui-org/react": "^2.4.3",
     "framer-motion": "^11.2.13",
     "next": "14.2.4",
-    "pdfjs-dist": "^4.4.168",
+    "pdfjs-dist": "^4.5.136",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -26,6 +26,7 @@
     "@googleapis/customsearch": "^3.0.0",
     "@types/gapi": "^0.0.47",
     "@types/node": "^20",
+    "@types/pdfjs-dist": "^2.10.378",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.19",
