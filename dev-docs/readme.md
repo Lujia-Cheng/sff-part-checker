@@ -53,11 +53,16 @@ Below are a non-exhaustive list of common knowledge and pitfalls for small-form-
   - The "sandwich" style: the GPU is relocated behind the motherboard, thus the motherboard is "sandwiched" between the GPU and the CPU cooler. This type of case requires a PCIe extension cable. The CPU cooler height is affected by the GPU's thickness. The sum of the GPU thickness and the CPU cooler height should not exceed the case's clearance.
   - The traditional style: the GPU is mounted on the motherboard as a traditional ATX build. The power supply is usually relocated to the front of the case to reduce wasted space. As a result, the CPU cooler height might be limited if an ATX power supply is used.
 
-Below are the suggested rationale for the compatibility check:
+Below are the suggested workflow:
 
 1. Read the case's manual, identify the case's style, and use above knowledge to identify the potential conflicts.
-2. Identify the video card (GPU, graphics card) dimensions, and organize the dimensions in the manual's terminology.
-3. Provide the rationale of the compatibility and refer to the page number of the manual.
+2. Identify the video card (GPU, graphics card) dimensions, and adapt the dimensions in the manual's terminology.
+3. Provide a detailed rationale of the compatibility and refer to the page number of the manual.
+
+Below are the suggested rationale use two paragraphs:
+
+State what is the main constraint of the case and why.
+State which parts are incompatible with the case and why. Refer to the page number of the manual.
 ```
 
 #### Components Information
@@ -142,3 +147,4 @@ Below are the suggested rationale for the compatibility check:
 # Useful Links
 
 Process a PDF file with Gemini 1.5 Pro: https://cloud.google.com/vertex-ai/generative-ai/docs/samples/generativeaionvertexai-gemini-pdf
+

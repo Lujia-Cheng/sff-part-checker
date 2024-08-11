@@ -27,19 +27,6 @@ export default function ManualHandler({
   files: File[];
   setFiles: (files: File[]) => void;
 }) {
-  const [manualUrl, setManualUrl] = useState<string>();
-
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    if (!parts?.case?.name) {
-      return;
-    }
-    lookupManualUrl(parts.case?.name).then((url) => {
-      setManualUrl(url);
-      console.log("Manual URL:", url);
-    });
-  }, [parts]);
-
   function handleAddFiles() {
     const input = document.createElement("input");
     input.type = "file";
@@ -68,16 +55,6 @@ export default function ManualHandler({
 
   return (
     <>
-      {manualUrl && (
-        <span>
-          We&apos;ve found the manual for your case on&nbsp;
-          <Link href={manualUrl} isExternal showAnchorIcon>
-            {/* show file.pdf (main url)  */}
-            {new URL(manualUrl).hostname}
-          </Link>
-        </span>
-      )}
-      <Spacer y={4} />
       <Table
         isStriped
         aria-label="Uploaded Manual"

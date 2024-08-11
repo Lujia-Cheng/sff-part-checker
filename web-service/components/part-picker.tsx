@@ -1,4 +1,4 @@
-import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Link } from "@nextui-org/react";
 
 import caseData from "@/app/data/json/case.json";
 import cpuCoolerData from "@/app/data/json/cpu-cooler.json";
@@ -7,6 +7,8 @@ import motherboardData from "@/app/data/json/motherboard.json";
 import powerSupplyData from "@/app/data/json/power-supply.json";
 
 import type { PcConfig } from "@/types";
+import { useEffect, useState } from "react";
+import { lookupManualUrl } from "@/app/actions";
 
 export default function PartPicker({
   parts,
@@ -15,12 +17,22 @@ export default function PartPicker({
   parts: PcConfig | undefined;
   setParts: any;
 }) {
+  const [manualUrl, setManualUrl] = useState<string>();
   // update the parts state with the selected part
   const updateParts = (part: string, item: any) => {
     const parsedItem = JSON.parse(item);
     setParts({ ...parts, [part]: parsedItem });
   };
 
+  useEffect(() => {
+    if (!parts?.case?.name) {
+      return;
+    }
+    lookupManualUrl(parts.case?.name).then((url) => {
+      setManualUrl(url);
+      console.log("Manual URL:", url);
+    });
+  }, [parts?.case?.name]);
   return (
     // todo - not the cleanest way to do this, but it works for now
     <div className="flex flex-col w-full gap-2">
@@ -37,6 +49,16 @@ export default function PartPicker({
           </AutocompleteItem>
         ))}
       </Autocomplete>
+
+      {manualUrl && (
+        <span>
+          We&apos;ve found the manual for your case on&nbsp;
+          <Link href={manualUrl} isExternal showAnchorIcon>
+            {/* show file.pdf (main url)  */}
+            {new URL(manualUrl).hostname}
+          </Link>
+        </span>
+      )}
 
       <Autocomplete
         aria-label="CPU Cooler"
