@@ -3,11 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <title>SFF Compatibility Checker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="popup.js" defer></script>
+    <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <h1>Settings</h1>
-    <label for="apiKey">Google API Key:</label>
+    <p>
+      You can get your Gemini API key from the
+      <a
+        href="https://ai.google.dev/gemini-api/docs/api-key"
+        title="Google Gemini website"
+      >
+        Google Gemini website</a
+      >.
+    </p>
+    <label for="apiKey">Gemini API Key:</label>
     <input type="text" id="apiKey" />
     <button id="saveApiKey">Save</button>
   </body>
